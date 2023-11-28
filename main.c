@@ -1,5 +1,39 @@
 #include <stdio.h>
 #include <stdlib.h>
+
+#define CANTIDADNODOS 3
+//para guardar caminos, el nodo al que se conecta y el peso del camino
+struct Par{
+  int n;
+  int w;
+};
+struct Par* grafo[CANTIDADNODOS];//los nodos a los que esta conectado el nodo i-esimo
+int cantidadConexiones[CANTIDADNODOS];//la cantidad de conexiones que tiene el nodo i-esimo
+
+void cargarGrafo(){
+  FILE* file = fopen("conexiones.txt","r");
+  if(file == NULL){printf("woopsie poopsie! no se pudo cargar las conexiones");return;}
+  int canvec;
+  for(int i=0;fscanf(file,"%d",&canvec)!=EOF;i++){
+    grafo[i] = (struct Par*)malloc(canvec * sizeof(struct Par));
+    cantidadConexiones[i] = canvec;
+    int n,w;
+    for(int j=0;j<canvec;j++){
+      fscanf(file,"%d",&n);
+      fscanf(file,"%d",&w);
+      struct Par p = {n,w};
+      grafo[i][j] = p;
+    }
+  }
+}
+void imprimirGrafo(){
+  for(int i=0;i<CANTIDADNODOS;i++){
+    printf("%d:",i);
+    for(int j=0;j<cantidadConexiones[i];j++){
+      printf(" (%d,%d)",grafo[i][j].n,grafo[i][j].w);
+    }
+  }
+}
 //esta estructura en realidad representa cada nodo de una linkedlist que representa el stack, al final el stack en si va a ser un puntero que apunta al primero de estos
 struct Stack{
   int valor;
@@ -20,16 +54,7 @@ int pop(struct Stack** pstack){
 }
 
 int main(int argc, char* argv[]){
-  struct Stack* stack = NULL;
-  push(&stack,2);
-  printf("%d\n",pop(&stack));
-
-  push(&stack,3);
-  push(&stack,5);
-  push(&stack,7);
-  printf("%d\n",pop(&stack));
-  printf("%d\n",pop(&stack));
-  printf("%d\n",pop(&stack));
-
+  cargarGrafo();
+  imprimirGrafo();
   return 0;
 }
