@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define CANTIDADNODOS 3
+#define CANTIDADNODOS 111
 //para guardar caminos, el nodo al que se conecta y el peso del camino
 struct Par{
   int n;
@@ -32,6 +32,7 @@ void imprimirGrafo(){
     for(int j=0;j<cantidadConexiones[i];j++){
       printf(" (%d,%d)",grafo[i][j].n,grafo[i][j].w);
     }
+    printf("\n");
   }
 }
 //esta estructura en realidad representa cada nodo de una linkedlist que representa el stack, al final el stack en si va a ser un puntero que apunta al primero de estos
