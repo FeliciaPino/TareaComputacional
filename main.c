@@ -55,9 +55,20 @@ int pop(struct Stack** pstack){
   *pstack = newTop;
   return ret;
 }
+struct Stack* makeStack(int n){
+  struct Stack* stack = (struct Stack*)malloc(sizeof(struct Stack));
+  stack->valor = n;
+  stack->siguiente = NULL;
+  return stack;
+}
+
 
 int main(int argc, char* argv[]){
-  cargarGrafo();
-  imprimirGrafo();
+  struct Stack* stack = makeStack(3);
+  printf("%d\n",pop(&stack));
+  push(&stack,5);
+  push(&stack,7);
+  printf("%d\n",pop(&stack));
+  printf("%d\n",pop(&stack));
   return 0;
 }
