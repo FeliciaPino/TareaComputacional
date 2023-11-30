@@ -2,23 +2,29 @@
 #include <string.h>
 #include <stdlib.h>
 
-char* lector(char* hola, int cual) {
-    char frase[50];  
+char** lector(char* hola, char** lectura) {
+    char frase[50];
     strcpy(frase, hola);
+    char* token = strtok(frase, " ");
     int aux = 0;
-    char* token = strtok(frase, " \"");
-    while (token != NULL) {
-        aux++;
-        if (aux == cual) {
-            return strdup(token);
-        }
-        token = strtok(NULL, " \"");
+    for (int i = 0; i < 6; i++) {
+        lectura[i] = NULL;
     }
-    return "Error al leer la dirrecion o indice incorrecto.";
+    while (token != NULL && aux < 6) {
+        lectura[aux] = strdup(token);
+        aux++;
+        token = strtok(NULL, " ");
+    }
+    return lectura;
 }
 
 int main() {
-    printf("%s\n", lector("\"Ongolmo 325\" \"paicavi 309\" \"san_martin 567\"", 3));
-    
+    char* lectura[6];
+    lector("Ongolmo 325 paicavi 309 san_martin 567", lectura);
+    for (int i = 0; i < 6; i++) {
+        if (lectura[i] != NULL) {
+            printf("%s\n", lectura[i]);
+        }
+    }
     return 0;
 }
