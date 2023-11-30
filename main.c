@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #define CANTIDADNODOS 111
+#define INFINITY 2147483647 //el valor maximo del int, asumiendo que tiene sistema 32 bits. dudo que no sea el caso
 //para guardar caminos, el nodo al que se conecta y el peso del camino
 struct Par{
   int n;
@@ -9,6 +10,8 @@ struct Par{
 };
 struct Par* grafo[CANTIDADNODOS];//los nodos a los que esta conectado el nodo i-esimo
 int cantidadConexiones[CANTIDADNODOS];//la cantidad de conexiones que tiene el nodo i-esimo
+int distancias[CANTIDADNODOS];//al usar dijkstra guarda las distancias a cada nodo
+int previo[CANTIDADNODOS];//al usar dijkstra, guarda el nodo anterior en el camino mas corto
 
 void cargarGrafo(){
   FILE* file = fopen("conexiones.txt","r");
@@ -35,6 +38,8 @@ void imprimirGrafo(){
     printf("\n");
   }
 }
+
+
 //esta estructura en realidad representa cada nodo de una linkedlist que representa el stack, al final el stack en si va a ser un puntero que apunta al primero de estos
 struct Stack{
   int valor;
@@ -61,14 +66,40 @@ struct Stack* makeStack(int n){
   stack->siguiente = NULL;
   return stack;
 }
+int stackEmpty(struct Stack* stack){return stack==NULL;}
 
-
+//retorna un stack con los nodos del camino mas corto entre nodoSalida y nodoLLegada, la distancia se guarda en distancias[nodoLLegada]
+struct Stack* dijkstra(int nodoSalida, int nodoLLegada){
+  for(int i=0;i<CANTIDADNODOS;i++){
+    distancias[i] = INFINITY;
+  }
+  distancias[nodoSalida] = 0;
+  struct Stack* stack = makeStack(nodoSalida);
+  while(!stackEmpty(stack)){
+    int esteNodo = pop(&stack);
+    if(esteNodo == nodoLLegada)continue;//no es necesario ver los caminos que pasan por el nodo de llegada, obviamente no seran el mas corto
+    if(distancias[esteNodo]>distancias[nodoLLegada])continue;//si ya encontramos un camino mas corto que este, para que segirlo?
+    //revisar los i vecinos de este nodo
+    for(int i=0;i<cantidadConexiones[esteNodo];i++){
+      int aquelNodo = grafo[esteNodo][i].n;
+      if((distancias[esteNodo]+grafo[esteNodo][i].w)<distancias[aquelNodo]){
+        distancias[aquelNodo] = distancias[esteNodo]+grafo[esteNodo][i].w;
+        previo[aquelNodo] = esteNodo;
+        push(&stack,aquelNodo);
+      }
+    }
+  }
+  struct Stack* camino = makeStack(nodoLLegada);
+  for(int i=previo[nodoLLegada]; i != nodoSalida; i=previo[i])push(&camino,i);
+  return camino;
+}
 int main(int argc, char* argv[]){
-  struct Stack* stack = makeStack(3);
-  printf("%d\n",pop(&stack));
-  push(&stack,5);
-  push(&stack,7);
-  printf("%d\n",pop(&stack));
-  printf("%d\n",pop(&stack));
+  cargarGrafo();
+  int a = 66; int b = 95;
+  struct Stack* camino = dijkstra(a,b);
+  printf("distancia: %d\n",distancias[b]);
+  while(!stackEmpty(camino)){
+    printf("%d ",pop(&camino));
+  }
   return 0;
 }
