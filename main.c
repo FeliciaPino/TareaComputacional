@@ -50,7 +50,9 @@ void push(struct Stack** pstack, int valor){
 int pop(struct Stack** pstack){
   if((*pstack)==NULL)return -1;
   int ret = (*pstack)->valor;
-  (*pstack) = (*pstack)->siguiente;
+  struct Stack* newTop = (*pstack)->siguiente;
+  free(*pstack);
+  *pstack = newTop;
   return ret;
 }
 
