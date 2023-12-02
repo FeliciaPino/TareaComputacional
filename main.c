@@ -40,18 +40,23 @@ void imprimirGrafo(){
 }
 
 
-//esta estructura en realidad representa cada nodo de una linkedlist que representa el stack, al final el stack en si va a ser un puntero que apunta al primero de estos
+// nodo de linked list, representa los stack y filas
 struct LlNode{
   int valor;
   struct LlNode* siguiente;
 };
-//se le pasa un puntero al puntero que apunta a la cima del stack, crea un nuevo nodo apuntando a la cima y modifica el puntero para que ahora apunte a este nuevo creado
-void push(struct LlNode** pstack, int valor){
+struct Queue{
+  struct Llnode* front;
+  struct Llnode* back;
+};
+//se le pasa un puntero al puntero que apunta a la cima de la estructura, crea un nuevo nodo apuntando a la cima y modifica el puntero para que ahora apunte a este nuevo creado
+void push(struct LlNode** topPointer, int valor){
   struct LlNode* newTop = (struct LlNode*)malloc(sizeof(struct LlNode));
   newTop->valor = valor;
-  newTop->siguiente = (*pstack);
-  *pstack = newTop;
+  newTop->siguiente = (*topPointer);
+  *topPointer = newTop;
 }
+//sele pasa puntero al puntero de la cima del stack y le hace pop
 int pop(struct LlNode** pstack){
   if((*pstack)==NULL)return -1;
   int ret = (*pstack)->valor;
