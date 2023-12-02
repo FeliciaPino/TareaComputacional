@@ -44,6 +44,7 @@ void imprimirGrafo(){
 struct LlNode{
   int valor;
   struct LlNode* siguiente;
+  struct LlNode* anterior;
 };
 struct Queue{
   struct LlNode* front;
@@ -52,27 +53,42 @@ struct Queue{
 struct Stack{
   struct LlNode* top;
 };
+struct Stack makeStack(int n){
+  struct Stack stack = {(struct LlNode*)malloc(sizeof(struct LlNode))};
+  stack.top->valor = n;
+  stack.top->siguiente = NULL;
+  stack.top->anterior = NULL;
+  return stack;
+}
 //se le pasa un puntero al puntero que apunta a la cima de la estructura, crea un nuevo nodo apuntando a la cima y modifica el puntero para que ahora apunte a este nuevo creado
 void push(struct Stack* pstack, int valor){
+  if(pstack->top == NULL){
+    *pstack = makeStack(valor);
+    return;
+  }
   struct LlNode* newTop = (struct LlNode*)malloc(sizeof(struct LlNode));
+  pstack->top->anterior = newTop;
   newTop->valor = valor;
   newTop->siguiente = pstack->top;
   pstack->top = newTop;
 }
-//sele pasa puntero al puntero de la cima del stack y le hace pop
+//sele pasa puntero al stack y le hace pop
 int pop(struct Stack* pstack){
   if(pstack->top==NULL)return -1;
-  int ret = (pstack->top)->valor;
+  int ret = pstack->top->valor;
   struct LlNode* newTop = (pstack->top)->siguiente;
   free(pstack->top);
   pstack->top = newTop;
   return ret;
 }
-struct Stack makeStack(int n){
-  struct Stack stack = {(struct LlNode*)malloc(sizeof(struct LlNode))};
-  stack.top->valor = n;
-  stack.top->siguiente = NULL;
-  return stack;
+//se le pasa puntero a la fila y le hace pop
+int popQ(struct Queue* pqueue){
+  if(pqueue->front == NULL)return -1;
+  int ret = pqueue->front->valor;
+  struct LlNode* newFront = pqueue->front->anterior;
+  free(pqueue->front);
+  pqueue->front = newFront;
+  return ret;
 }
 int stackEmpty(struct Stack stack){return stack.top==NULL;}
 
@@ -110,5 +126,6 @@ int main(int argc, char* argv[]){
   while(!stackEmpty(camino)){
     printf("%d ",pop(&camino));
   }
+  
   return 0;
 }
