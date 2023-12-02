@@ -159,28 +159,28 @@ int diccionario(const char* ubicacion) {
     dictionary[13].value = 13;
     
     strcpy(dictionary[14].key, "los_Carrera");
-    dictionary[14].value = 14;
+    dictionary[14].value = 0;
     
     strcpy(dictionary[15].key, "Maipu");
-    dictionary[15].value = 15;
+    dictionary[15].value = 1;
     
     strcpy(dictionary[16].key, "Fraire");
-    dictionary[16].value = 16;
+    dictionary[16].value = 2;
     
     strcpy(dictionary[17].key, "Barros_Arana");
-    dictionary[17].value = 17;
+    dictionary[17].value = 3;
     
     strcpy(dictionary[18].key, "O'Higgins");
-    dictionary[18].value = 18;
+    dictionary[18].value = 4;
     
     strcpy(dictionary[19].key, "San_Martin");
-    dictionary[19].value = 19;
+    dictionary[19].value = 5;
     
     strcpy(dictionary[20].key, "Cochrane");
-    dictionary[20].value = 20;
+    dictionary[20].value = 6;
     
     strcpy(dictionary[21].key, "Chacabuco");
-    dictionary[21].value = 21;
+    dictionary[21].value = 7;
     
 	for (i=0 ; i < 21 ; i++) {
         if (strcmp(ubicacion, dictionary[i].key) == 0) {
@@ -221,21 +221,12 @@ void lector(const char* hola, int** lectura) {
 
 // ---------------------------------------------------------------------------MAIN-----------------------------------------------------------------------------//
 int main(int argc, char* argv[]){
-  char entrada;
+  char* entrada;
   entrada = argv[0];
   for(i=1; i<argc ; i++){
   	strcat(entrada, " "); 
   	strcat(entrada, argv[i]); 
   }
-  	
-  cargarGrafo();
-  int a = 66; int b = 95;
-  struct Stack* camino = dijkstra(a,b);
-  printf("distancia: %d\n",distancias[b]);
-  while(!stackEmpty(camino)){
-    printf("%d ",pop(&camino));
-  }
-  printf("\n");
   
   int* lectura[6];
     lector(entrada, lectura);
