@@ -40,43 +40,88 @@ void imprimirGrafo(){
 }
 
 
-//esta estructura en realidad representa cada nodo de una linkedlist que representa el stack, al final el stack en si va a ser un puntero que apunta al primero de estos
-struct Stack{
+// nodo de linked list, representa los stack y filas
+struct LlNode{
   int valor;
-  struct Stack* siguiente;
+  struct LlNode* siguiente;
+  struct LlNode* anterior;
 };
-//se le pasa un puntero al puntero que apunta a la cima del stack, crea un nuevo nodo apuntando a la cima y modifica el puntero para que ahora apunte a este nuevo creado
-void push(struct Stack** pstack, int valor){
-  struct Stack* newTop = (struct Stack*)malloc(sizeof(struct Stack));
-  newTop->valor = valor;
-  newTop->siguiente = (*pstack);
-  *pstack = newTop;
-}
-int pop(struct Stack** pstack){
-  if((*pstack)==NULL)return -1;
-  int ret = (*pstack)->valor;
-  struct Stack* newTop = (*pstack)->siguiente;
-  free(*pstack);
-  *pstack = newTop;
-  return ret;
-}
-struct Stack* makeStack(int n){
-  struct Stack* stack = (struct Stack*)malloc(sizeof(struct Stack));
-  stack->valor = n;
-  stack->siguiente = NULL;
+struct Queue{
+  struct LlNode* front;
+  struct LlNode* back;
+};
+struct Stack{
+  struct LlNode* top;
+};
+struct Stack makeStack(int n){
+  struct Stack stack = {(struct LlNode*)malloc(sizeof(struct LlNode))};
+  stack.top->valor = n;
+  stack.top->siguiente = NULL;
+  stack.top->anterior = NULL;
   return stack;
 }
-int stackEmpty(struct Stack* stack){return stack==NULL;}
+struct Queue makeQueue(int n){
+  struct LlNode* node = (struct LlNode*)malloc(sizeof(struct LlNode));
+  node->valor = n;
+  node->siguiente = NULL;
+  node->anterior = NULL;
+  struct Queue queue = {node,node};
+  return queue;
+}
+//se le pasa un puntero al puntero que apunta a la cima de la estructura, crea un nuevo nodo apuntando a la cima y modifica el puntero para que ahora apunte a este nuevo creado
+void pushStack(struct Stack* pstack, int valor){
+  if(pstack->top == NULL){
+    *pstack = makeStack(valor);
+    return;
+  }
+  struct LlNode* newTop = (struct LlNode*)malloc(sizeof(struct LlNode));
+  pstack->top->anterior = newTop;
+  newTop->valor = valor;
+  newTop->siguiente = pstack->top;
+  pstack->top = newTop;
+}
+void pushQ(struct Queue* pq, int valor){
+  if(pq->front == NULL){
+    *pq = makeQueue(valor);
+    return;
+  }
+  struct LlNode* newBack = (struct LlNode*)malloc(sizeof(struct LlNode));
+  pq->back->anterior = newBack;
+  newBack->valor = valor;
+  newBack->siguiente = pq->back;
+  pq->back = newBack;
+}
+//sele pasa puntero al stack y le hace pop
+int pop(struct Stack* pstack){
+  if(pstack->top==NULL)return -1;
+  int ret = pstack->top->valor;
+  struct LlNode* newTop = (pstack->top)->siguiente;
+  free(pstack->top);
+  pstack->top = newTop;
+  return ret;
+}
+//se le pasa puntero a la fila y le hace pop
+int popQ(struct Queue* pqueue){
+  if(pqueue->front == NULL)return -1;
+  int ret = pqueue->front->valor;
+  struct LlNode* newFront = pqueue->front->anterior;
+  free(pqueue->front);
+  pqueue->front = newFront;
+  return ret;
+}
+int stackEmpty(struct Stack stack){return stack.top == NULL;}
+int queueEmpty(struct Queue queue){return queue.front == NULL;}
 
 //retorna un stack con los nodos del camino mas corto entre nodoSalida y nodoLLegada, la distancia se guarda en distancias[nodoLLegada]
-struct Stack* dijkstra(int nodoSalida, int nodoLLegada){
+struct Stack dijkstra(int nodoSalida, int nodoLLegada){
   for(int i=0;i<CANTIDADNODOS;i++){
     distancias[i] = INFINITY;
   }
   distancias[nodoSalida] = 0;
-  struct Stack* stack = makeStack(nodoSalida);
-  while(!stackEmpty(stack)){
-    int esteNodo = pop(&stack);
+  struct Queue queue = makeQueue(nodoSalida);
+  while(!queueEmpty(queue)){
+    int esteNodo = popQ(&queue);
+    //printf("visitando %d\n",esteNodo);
     if(esteNodo == nodoLLegada)continue;//no es necesario ver los caminos que pasan por el nodo de llegada, obviamente no seran el mas corto
     if(distancias[esteNodo]>distancias[nodoLLegada])continue;//si ya encontramos un camino mas corto que este, para que segirlo?
     //revisar los i vecinos de este nodo
@@ -85,21 +130,23 @@ struct Stack* dijkstra(int nodoSalida, int nodoLLegada){
       if((distancias[esteNodo]+grafo[esteNodo][i].w)<distancias[aquelNodo]){
         distancias[aquelNodo] = distancias[esteNodo]+grafo[esteNodo][i].w;
         previo[aquelNodo] = esteNodo;
-        push(&stack,aquelNodo);
+        pushQ(&queue,aquelNodo);
       }
     }
   }
-  struct Stack* camino = makeStack(nodoLLegada);
-  for(int i=previo[nodoLLegada]; i != nodoSalida; i=previo[i])push(&camino,i);
+  struct Stack camino = makeStack(nodoLLegada);
+  for(int i=previo[nodoLLegada]; i != nodoSalida; i=previo[i])pushStack(&camino,i);
   return camino;
 }
 int main(int argc, char* argv[]){
   cargarGrafo();
-  int a = 66; int b = 95;
-  struct Stack* camino = dijkstra(a,b);
+  int a = 0; int b = 16;
+  printf("calculando desde nodo %d a nodo %d\n",a,b);
+  struct Stack camino = dijkstra(a,b);
   printf("distancia: %d\n",distancias[b]);
   while(!stackEmpty(camino)){
     printf("%d ",pop(&camino));
   }
+  
   return 0;
 }
