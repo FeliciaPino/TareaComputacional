@@ -60,8 +60,16 @@ struct Stack makeStack(int n){
   stack.top->anterior = NULL;
   return stack;
 }
+struct Queue makeQueue(int n){
+  struct LlNode* node = (struct LlNode*)malloc(sizeof(struct LlNode));
+  node->valor = n;
+  node->siguiente = NULL;
+  node->anterior = NULL;
+  struct Queue queue = {node,node};
+  return queue;
+}
 //se le pasa un puntero al puntero que apunta a la cima de la estructura, crea un nuevo nodo apuntando a la cima y modifica el puntero para que ahora apunte a este nuevo creado
-void push(struct Stack* pstack, int valor){
+void pushStack(struct Stack* pstack, int valor){
   if(pstack->top == NULL){
     *pstack = makeStack(valor);
     return;
@@ -71,6 +79,17 @@ void push(struct Stack* pstack, int valor){
   newTop->valor = valor;
   newTop->siguiente = pstack->top;
   pstack->top = newTop;
+}
+void pushQ(struct Queue* pq, int valor){
+  if(pq->front == NULL){
+    *pq = makeQueue(valor);
+    return;
+  }
+  struct LlNode* newBack = (struct LlNode*)malloc(sizeof(struct LlNode));
+  pq->back->anterior = newBack;
+  newBack->valor = valor;
+  newBack->siguiente = pq->back;
+  pq->back = newBack;
 }
 //sele pasa puntero al stack y le hace pop
 int pop(struct Stack* pstack){
@@ -90,7 +109,8 @@ int popQ(struct Queue* pqueue){
   pqueue->front = newFront;
   return ret;
 }
-int stackEmpty(struct Stack stack){return stack.top==NULL;}
+int stackEmpty(struct Stack stack){return stack.top == NULL;}
+int queueEmpty(struct Queue queue){return queue.front == NULL;}
 
 //retorna un stack con los nodos del camino mas corto entre nodoSalida y nodoLLegada, la distancia se guarda en distancias[nodoLLegada]
 struct Stack dijkstra(int nodoSalida, int nodoLLegada){
@@ -109,15 +129,24 @@ struct Stack dijkstra(int nodoSalida, int nodoLLegada){
       if((distancias[esteNodo]+grafo[esteNodo][i].w)<distancias[aquelNodo]){
         distancias[aquelNodo] = distancias[esteNodo]+grafo[esteNodo][i].w;
         previo[aquelNodo] = esteNodo;
-        push(&stack,aquelNodo);
+        pushStack(&stack,aquelNodo);
       }
     }
   }
   struct Stack camino = makeStack(nodoLLegada);
-  for(int i=previo[nodoLLegada]; i != nodoSalida; i=previo[i])push(&camino,i);
+  for(int i=previo[nodoLLegada]; i != nodoSalida; i=previo[i])pushStack(&camino,i);
   return camino;
 }
 int main(int argc, char* argv[]){
+  struct Queue queue = makeQueue(2);
+  pushQ(&queue,3);
+  pushQ(&queue,5);
+  pushQ(&queue,7);
+  pushQ(&queue,11);
+  while(!queueEmpty(queue)){
+    printf("%d\n",popQ(&queue));
+  }
+  /*
   cargarGrafo();
   int a = 66; int b = 95;
   struct Stack camino = dijkstra(a,b);
@@ -126,6 +155,6 @@ int main(int argc, char* argv[]){
   while(!stackEmpty(camino)){
     printf("%d ",pop(&camino));
   }
-  
+  */
   return 0;
 }
