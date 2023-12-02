@@ -233,7 +233,14 @@ int diccionario(const char* ubicacion) {
 }
 
 
-
+char nombresIntersecciones[CANTIDADNODOS][50];
+void cargarNombresIntersecciones(){
+  FILE* file = fopen("Intersecciones.txt","r");
+  if(file == NULL){printf("woopsie poopsie! no se pudo cargar las intersecciones");return;}
+  for(int i=0;i<CANTIDADNODOS;i++){
+    if(fscanf(file,"%s",&nombresIntersecciones[i])==EOF)printf("woopsiepoopsie!!, no hay suficientes nombres en el archivo de intersecciones!");
+  }
+}
 
 
 // ----------------------------------------------------------------------SECCIÓN LECTOR---------------------------------------------------------------------------//
@@ -256,8 +263,6 @@ void lector(const char* hola, int* lectura) {
     				lectura[aux] = (numero+50)/100;
             if(lectura[aux-1]<14){
               lectura[aux] = 8 - lectura[aux];
-            }else{
-              lectura[aux-1] -= 14;
             }
     			}
             aux++;
@@ -279,13 +284,20 @@ int main(int argc, char* argv[]){
   int lectura[6];
   lector(entrada,lectura);
 
+
+  cargarNombresIntersecciones();
   cargarGrafo();
   int nodoSalida = 0; int nodoLLegada = 16;
   //TODO inicializar nodo salida y llegada
+  for(int i=0;i<(argc-1)*2,i++){
+    lectura
+  }
+  }
   struct Stack camino = dijkstra(nodoSalida,nodoLLegada);
   printf("distancia: %d\n",distancias[nodoLLegada]);
   while(!stackEmpty(camino)){
     printf("%d ",pop(&camino));
   }
+  
   return 0;
 }
