@@ -159,28 +159,28 @@ int diccionario(const char* ubicacion) {
     dictionary[13].value = 13;
     
     strcpy(dictionary[14].key, "los_Carrera");
-    dictionary[14].value = 0;
+    dictionary[14].value = 14;
     
     strcpy(dictionary[15].key, "Maipu");
-    dictionary[15].value = 1;
+    dictionary[15].value = 15;
     
     strcpy(dictionary[16].key, "Fraire");
-    dictionary[16].value = 2;
+    dictionary[16].value = 16;
     
     strcpy(dictionary[17].key, "Barros_Arana");
-    dictionary[17].value = 3;
+    dictionary[17].value = 17;
     
     strcpy(dictionary[18].key, "O'Higgins");
-    dictionary[18].value = 4;
+    dictionary[18].value = 18;
     
     strcpy(dictionary[19].key, "San_Martin");
-    dictionary[19].value = 5;
+    dictionary[19].value = 19;
     
     strcpy(dictionary[20].key, "Cochrane");
-    dictionary[20].value = 6;
+    dictionary[20].value = 20;
     
     strcpy(dictionary[21].key, "Chacabuco");
-    dictionary[21].value = 7;
+    dictionary[21].value = 21;
     
 	for (i=0 ; i < 21 ; i++) {
         if (strcmp(ubicacion, dictionary[i].key) == 0) {
@@ -196,7 +196,7 @@ int diccionario(const char* ubicacion) {
 
 
 // ----------------------------------------------------------------------SECCIÓN LECTOR---------------------------------------------------------------------------//
-void lector(const char* hola, int** lectura) {
+void lector(const char* hola, int* lectura) {
     char frase[50];
     strcpy(frase, hola);
     for (i = 0; i < 6; i++) {
@@ -206,12 +206,19 @@ void lector(const char* hola, int** lectura) {
     int aux = 0;
     while (token != NULL && aux < 6) {
         if (strcmp(token, " ") != 0 && strcmp(token, "") != 0) {
+          char* palabra =strdup(token);
         	if(aux%2==0){
-        		lectura[aux] = diccionario(strdup(token));
-			}
-			else{
-				lectura[aux] = (atoi(strdup(token))+50)/100;
-			}
+        		lectura[aux] = diccionario(palabra);
+    			}
+    			else{
+            int numero = atoi(palabra);
+    				lectura[aux] = (numero+50)/100;
+            if(lectura[aux-1]<14){
+              lectura[aux] = 8 - lectura[aux];
+            }else{
+              lectura[aux-1] -= 14;
+            }
+    			}
             aux++;
         }
         token = strtok(NULL, " ");
@@ -222,21 +229,22 @@ void lector(const char* hola, int** lectura) {
 // ---------------------------------------------------------------------------MAIN-----------------------------------------------------------------------------//
 int main(int argc, char* argv[]){
   char* entrada;
-  entrada = argv[0];
-  for(i=1; i<argc ; i++){
+  entrada = argv[1];
+  for(i=2; i<argc ; i++){
   	strcat(entrada, " "); 
   	strcat(entrada, argv[i]); 
   }
   
-  int* lectura[6];
-    lector(entrada, lectura);
-    for (i = 0; i < 6; i++) {
+  int lectura[6];
+  lector(entrada,lectura);
+
+  for (i = 0; i < 6; i++) {
         if (lectura[i] != NULL) {
             printf("%d\n", lectura[i]);
         }
         else{
-        	printf("Null");
-		}
+          printf("Null");
     }
+  }
   return 0;
 }
