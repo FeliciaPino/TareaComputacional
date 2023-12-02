@@ -118,9 +118,10 @@ struct Stack dijkstra(int nodoSalida, int nodoLLegada){
     distancias[i] = INFINITY;
   }
   distancias[nodoSalida] = 0;
-  struct Stack stack = makeStack(nodoSalida);
-  while(!stackEmpty(stack)){
-    int esteNodo = pop(&stack);
+  struct Queue queue = makeQueue(nodoSalida);
+  while(!queueEmpty(queue)){
+    int esteNodo = popQ(&queue);
+    //printf("visitando %d\n",esteNodo);
     if(esteNodo == nodoLLegada)continue;//no es necesario ver los caminos que pasan por el nodo de llegada, obviamente no seran el mas corto
     if(distancias[esteNodo]>distancias[nodoLLegada])continue;//si ya encontramos un camino mas corto que este, para que segirlo?
     //revisar los i vecinos de este nodo
@@ -129,7 +130,7 @@ struct Stack dijkstra(int nodoSalida, int nodoLLegada){
       if((distancias[esteNodo]+grafo[esteNodo][i].w)<distancias[aquelNodo]){
         distancias[aquelNodo] = distancias[esteNodo]+grafo[esteNodo][i].w;
         previo[aquelNodo] = esteNodo;
-        pushStack(&stack,aquelNodo);
+        pushQ(&queue,aquelNodo);
       }
     }
   }
@@ -138,23 +139,14 @@ struct Stack dijkstra(int nodoSalida, int nodoLLegada){
   return camino;
 }
 int main(int argc, char* argv[]){
-  struct Queue queue = makeQueue(2);
-  pushQ(&queue,3);
-  pushQ(&queue,5);
-  pushQ(&queue,7);
-  pushQ(&queue,11);
-  while(!queueEmpty(queue)){
-    printf("%d\n",popQ(&queue));
-  }
-  /*
   cargarGrafo();
-  int a = 66; int b = 95;
-  struct Stack camino = dijkstra(a,b);
+  int a = 0; int b = 16;
   printf("calculando desde nodo %d a nodo %d\n",a,b);
+  struct Stack camino = dijkstra(a,b);
   printf("distancia: %d\n",distancias[b]);
   while(!stackEmpty(camino)){
     printf("%d ",pop(&camino));
   }
-  */
+  
   return 0;
 }
