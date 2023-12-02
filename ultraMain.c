@@ -202,25 +202,32 @@ void lector(const char* hola, int** lectura) {
     for (i = 0; i < 6; i++) {
         lectura[i] = NULL;
     }
-    char* token = strtok(frase, " \"");
+    char* token = strtok(frase, " ");
     int aux = 0;
     while (token != NULL && aux < 6) {
         if (strcmp(token, " ") != 0 && strcmp(token, "") != 0) {
-        	if(i%2==0){
+        	if(aux%2==0){
         		lectura[aux] = diccionario(strdup(token));
 			}
 			else{
-				lectura[aux] = atoi(strdup(token));
+				lectura[aux] = (atoi(strdup(token))+50)/100;
 			}
             aux++;
         }
-        token = strtok(NULL, " \"");
+        token = strtok(NULL, " ");
     }
 }
 
 
 // ---------------------------------------------------------------------------MAIN-----------------------------------------------------------------------------//
 int main(int argc, char* argv[]){
+  char entrada;
+  entrada = argv[0];
+  for(i=1; i<argc ; i++){
+  	strcat(entrada, " "); 
+  	strcat(entrada, argv[i]); 
+  }
+  	
   cargarGrafo();
   int a = 66; int b = 95;
   struct Stack* camino = dijkstra(a,b);
@@ -228,13 +235,17 @@ int main(int argc, char* argv[]){
   while(!stackEmpty(camino)){
     printf("%d ",pop(&camino));
   }
+  printf("\n");
   
   int* lectura[6];
-    lector("\"Ongolmo 325\" \"paicavi 309\" \"san_martin 567\"", lectura);
+    lector(entrada, lectura);
     for (i = 0; i < 6; i++) {
         if (lectura[i] != NULL) {
-            printf("%s\n", lectura[i]);
+            printf("%d\n", lectura[i]);
         }
+        else{
+        	printf("Null");
+		}
     }
   return 0;
 }
