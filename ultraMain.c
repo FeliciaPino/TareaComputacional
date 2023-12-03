@@ -97,7 +97,7 @@ struct Stack* dijkstra(int nodoSalida, int nodoLLegada){
     }
   }
   struct Stack* camino = makeStack(nodoLLegada);
-  for(i=previo[nodoLLegada]; i != nodoSalida; i=previo[i])push(&camino,i);
+  for(i=previo[nodoLLegada]; i != nodoSalida; i=previo[i]) push(&camino,i);
   return camino;
 }
 
@@ -235,30 +235,26 @@ int main(int argc, char* argv[]){
   }
   
   int lectura[6];
-  lector("Ongolmo 100 Rengo 400 Barros_Arana 200",lectura);
+  lector(entrada,lectura);
 
   cargarGrafo();
   int nodoSalida = 0; int nodoLLegada = 1;
   if(lectura[0]>=14) {
-    printf("nodo salida es : fila %d y columna %d\n",lectura[1],lectura[0]);
     nodoSalida = lectura[1]-14 + lectura[0]*14;
   }else{
-    printf("nodo salidaa es : fila %d y columna %d\n",lectura[0],lectura[1]);
     nodoSalida = lectura[0] + lectura[1]*14;
   } 
   if(lectura[2]>=14){
-    printf("nodo llegada es : fila %d y columna %d\n",lectura[3],lectura[2]);
     nodoLLegada = lectura[3]-14 + lectura[2]*14;
   }else {
-    printf("nodo llegadaa es : fila %d y columna %d\n",lectura[2],lectura[3]);
     nodoLLegada = lectura[2] + lectura[3]*14;
   }
   int distancia = 0;
-  printf("dijkstra: %d -> %d\n",nodoSalida,nodoLLegada);
   struct Stack* camino = dijkstra(nodoSalida,nodoLLegada);
   distancia += distancias[nodoLLegada];
   struct Stack* camino2;
   int nodoIntermedio;
+  
   if(argc >= 4){
     nodoIntermedio = nodoLLegada;
     if(lectura[4]>=14){
@@ -272,9 +268,10 @@ int main(int argc, char* argv[]){
     camino2 = dijkstra(nodoIntermedio,nodoLLegada);
     distancia += distancias[nodoLLegada];
   }
-  printf("queremos llegar desde %d a %d \n",nodoSalida, nodoLLegada);
+
   printf("queremos llegar desde %s a %s \n",nombresIntersecciones[nodoSalida], nombresIntersecciones[nodoLLegada]);
   printf("distancia: %d\n",distancia);
+  
   while(!stackEmpty(camino)){
     int n = pop(&camino);
     printf("%s -> ",nombresIntersecciones[n]);
