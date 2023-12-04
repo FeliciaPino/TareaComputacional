@@ -259,27 +259,30 @@ int main(int argc, char* argv[]){
   if(argc >= 4){
     nodoIntermedio = nodoLLegada;
     if(lectura[4]>=14){
-      printf("nodo llegada es : fila %d y columna %d\n",lectura[5],lectura[4]);
-      nodoLLegada = lectura[5]-14 + lectura[4]*14;
+      nodoLLegada = lectura[4]-14 + lectura[5]*14;
     }else {
-      printf("nodo llegadaa es : fila %d y columna %d\n",lectura[4],lectura[5]);
-      nodoLLegada = lectura[4] + lectura[5]*14;
+      nodoLLegada = lectura[5] + lectura[4]*14;
     }
-    printf("dijkstra: %d -> %d\n",nodoIntermedio,nodoLLegada);
+    
     camino2 = dijkstra(nodoIntermedio,nodoLLegada);
     distancia += distancias[nodoLLegada];
   }
-
-  printf("queremos llegar desde %s a %s \n",nombresIntersecciones[nodoSalida], nombresIntersecciones[nodoLLegada]);
-  printf("distancia: %d\n",distancia);
   
+  if(!stackEmpty(camino)){
+  	printf("%s", nombresIntersecciones[pop(&camino)]);
+  }
   while(!stackEmpty(camino)){
     int n = pop(&camino);
-    printf("%s -> ",nombresIntersecciones[n]);
+    printf("-> %s",nombresIntersecciones[n]);
+  }
+  
+  if(!stackEmpty(camino2)){
+  	printf("-> %s", nombresIntersecciones[pop(&camino2)]);
   }
   while(!stackEmpty(camino2)){
     int n = pop(&camino2);
-    printf("%s -> ",nombresIntersecciones[n]);
+    printf("-> %s",nombresIntersecciones[n]);
   }
+  printf("\ndistancia: %d m",distancia);
   return 0;
 }
