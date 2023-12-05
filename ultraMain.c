@@ -2,153 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define CANTIDADNODOS 111
+#define CANTIDADNODOS 112
 #define INFINITY 2147483647 //el valor maximo del int, asumiendo que tiene sistema 32 bits. dudo que no sea el caso
 
-
-
-// ---------------------------------------------------------------------SECCIÓN DIJKSTRA---------------------------------------------------------------------------//
-//para guardar caminos, el nodo al que se conecta y el peso del camino
-struct Par{
-  int n;
-  int w;
-};
-
-struct Par* grafo[CANTIDADNODOS];//los nodos a los que esta conectado el nodo i-esimo
-int cantidadConexiones[CANTIDADNODOS];//la cantidad de conexiones que tiene el nodo i-esimo
-int distancias[CANTIDADNODOS];//al usar dijkstra guarda las distancias a cada nodo
-int previo[CANTIDADNODOS];//al usar dijkstra, guarda el nodo anterior en el camino mas corto
 int i;
 int j;
-void cargarGrafo(){
-  FILE* file = fopen("conexiones.txt","r");
-  if(file == NULL){printf("woopsie poopsie! no se pudo cargar las conexiones");return;}
-  int canvec;
-  for(int i=0;fscanf(file,"%d",&canvec)!=EOF;i++){
-    grafo[i] = (struct Par*)malloc(canvec * sizeof(struct Par));
-    cantidadConexiones[i] = canvec;
-    int n,w;
-    for(int j=0;j<canvec;j++){
-      fscanf(file,"%d",&n);
-      fscanf(file,"%d",&w);
-      struct Par p = {n,w};
-      grafo[i][j] = p;
-    }
-  }
-}
-void imprimirGrafo(){
-  for(int i=0;i<CANTIDADNODOS;i++){
-    printf("%d:",i);
-    for(int j=0;j<cantidadConexiones[i];j++){
-      printf(" (%d,%d)",grafo[i][j].n,grafo[i][j].w);
-    }
-    printf("\n");
-  }
-}
 
-
-// nodo de linked list, representa los stack y filas
-struct LlNode{
-  int valor;
-  struct LlNode* siguiente;
-  struct LlNode* anterior;
-};
-struct Queue{
-  struct LlNode* front;
-  struct LlNode* back;
-};
-struct Stack{
-  struct LlNode* top;
-};
-struct Stack makeStack(int n){
-  struct Stack stack = {(struct LlNode*)malloc(sizeof(struct LlNode))};
-  stack.top->valor = n;
-  stack.top->siguiente = NULL;
-  stack.top->anterior = NULL;
-  return stack;
-}
-struct Queue makeQueue(int n){
-  struct LlNode* node = (struct LlNode*)malloc(sizeof(struct LlNode));
-  node->valor = n;
-  node->siguiente = NULL;
-  node->anterior = NULL;
-  struct Queue queue = {node,node};
-  return queue;
-}
-//se le pasa un puntero al puntero que apunta a la cima de la estructura, crea un nuevo nodo apuntando a la cima y modifica el puntero para que ahora apunte a este nuevo creado
-void pushStack(struct Stack* pstack, int valor){
-  if(pstack->top == NULL){
-    *pstack = makeStack(valor);
-    return;
-  }
-  struct LlNode* newTop = (struct LlNode*)malloc(sizeof(struct LlNode));
-  pstack->top->anterior = newTop;
-  newTop->valor = valor;
-  newTop->siguiente = pstack->top;
-  pstack->top = newTop;
-}
-void pushQ(struct Queue* pq, int valor){
-  if(pq->front == NULL){
-    *pq = makeQueue(valor);
-    return;
-  }
-  struct LlNode* newBack = (struct LlNode*)malloc(sizeof(struct LlNode));
-  pq->back->anterior = newBack;
-  newBack->valor = valor;
-  newBack->siguiente = pq->back;
-  pq->back = newBack;
-}
-//sele pasa puntero al stack y le hace pop
-int pop(struct Stack* pstack){
-  if(pstack->top==NULL)return -1;
-  int ret = pstack->top->valor;
-  struct LlNode* newTop = (pstack->top)->siguiente;
-  free(pstack->top);
-  pstack->top = newTop;
-  return ret;
-}
-//se le pasa puntero a la fila y le hace pop
-int popQ(struct Queue* pqueue){
-  if(pqueue->front == NULL)return -1;
-  int ret = pqueue->front->valor;
-  struct LlNode* newFront = pqueue->front->anterior;
-  free(pqueue->front);
-  pqueue->front = newFront;
-  return ret;
-}
-int stackEmpty(struct Stack stack){return stack.top == NULL;}
-int queueEmpty(struct Queue queue){return queue.front == NULL;}
-
-//retorna un stack con los nodos del camino mas corto entre nodoSalida y nodoLLegada, la distancia se guarda en distancias[nodoLLegada]
-struct Stack dijkstra(int nodoSalida, int nodoLLegada){
-  for(int i=0;i<CANTIDADNODOS;i++){
-    distancias[i] = INFINITY;
-  }
-  distancias[nodoSalida] = 0;
-  struct Queue queue = makeQueue(nodoSalida);
-  while(!queueEmpty(queue)){
-    int esteNodo = popQ(&queue);
-    //printf("visitando %d\n",esteNodo);
-    if(esteNodo == nodoLLegada)continue;//no es necesario ver los caminos que pasan por el nodo de llegada, obviamente no seran el mas corto
-    if(distancias[esteNodo]>distancias[nodoLLegada])continue;//si ya encontramos un camino mas corto que este, para que segirlo?
-    //revisar los i vecinos de este nodo
-    for(int i=0;i<cantidadConexiones[esteNodo];i++){
-      int aquelNodo = grafo[esteNodo][i].n;
-      if((distancias[esteNodo]+grafo[esteNodo][i].w)<distancias[aquelNodo]){
-        distancias[aquelNodo] = distancias[esteNodo]+grafo[esteNodo][i].w;
-        previo[aquelNodo] = esteNodo;
-        pushQ(&queue,aquelNodo);
-      }
-    }
-  }
-  struct Stack camino = makeStack(nodoLLegada);
-  for(int i=previo[nodoLLegada]; i != nodoSalida; i=previo[i])pushStack(&camino,i);
-    pushStack(&camino,nodoSalida);
-  return camino;
-}
-
-
-// --------------------------------------------------------------------SECCIÓN BIBLIOTECA---------------------------------------------------------------------------//
+// --------------------------------------------------------------------SECCIÃ“N BIBLIOTECA---------------------------------------------------------------------------//
 struct KeyValue {
     char key[50];
     int value;
@@ -156,7 +16,7 @@ struct KeyValue {
 
 int diccionario(const char* ubicacion) {
 
-    struct KeyValue dictionary[22];
+    struct KeyValue dictionary[23];
 
     strcpy(dictionary[0].key, "Arturo_Prat");
     dictionary[0].value = 0;
@@ -223,6 +83,9 @@ int diccionario(const char* ubicacion) {
     
     strcpy(dictionary[21].key, "Chacabuco");
     dictionary[21].value = 21;
+
+    strcpy(dictionary[22].key, "Pedro_Aguirre_Cerda");
+    dictionary[22].value = 22;
     
 	for (i=0 ; i < 21 ; i++) {
         if (strcmp(ubicacion, dictionary[i].key) == 0) {
@@ -233,18 +96,20 @@ int diccionario(const char* ubicacion) {
         
 }
 
+// -----------------------------------------------SECCION DE ASIGNACION DE NOMBRES DE INTERSECCIONES A CADA NODO---------------------------------------------------------------------------//
+
 
 char nombresIntersecciones[CANTIDADNODOS][50];
 void cargarNombresIntersecciones(){
   FILE* file = fopen("Intersecciones.txt","r");
   if(file == NULL){printf("woopsie poopsie! no se pudo cargar las intersecciones");return;}
-  for(int i=0;i<CANTIDADNODOS;i++){
+  for(i=0;i<CANTIDADNODOS;i++){
     if(fscanf(file,"%s",&nombresIntersecciones[i])==EOF)printf("woopsiepoopsie!!, no hay suficientes nombres en el archivo de intersecciones!");
   }
 }
 
 
-// ----------------------------------------------------------------------SECCIÓN LECTOR---------------------------------------------------------------------------//
+// ----------------------------------------------------------------------SECCIÃ“N LECTOR---------------------------------------------------------------------------//
 void lector(const char* hola, int* lectura) {
     char frase[50];
     strcpy(frase, hola);
@@ -269,6 +134,120 @@ void lector(const char* hola, int* lectura) {
     }
 }
 
+// ---------------------------------------------------------------------SECCIÃ“N DIJKSTRA---------------------------------------------------------------------------//
+//para guardar caminos, el nodo al que se conecta y el peso del camino
+struct Par{
+  int n;
+  int w;
+};
+struct Par* grafo[CANTIDADNODOS];//los nodos a los que esta conectado el nodo i-esimo
+int cantidadConexiones[CANTIDADNODOS];//la cantidad de conexiones que tiene el nodo i-esimo
+int distancias[CANTIDADNODOS];//al usar dijkstra guarda las distancias a cada nodo
+int previo[CANTIDADNODOS];//al usar dijkstra, guarda el nodo anterior en el camino mas corto
+void cargarGrafo(){
+  FILE* file = fopen("conexiones.txt","r");
+  if(file == NULL){printf("woopsie poopsie! no se pudo cargar las conexiones");return;}
+  int canvec;
+  for(i=0;fscanf(file,"%d",&canvec)!=EOF;i++){
+    grafo[i] = (struct Par*)malloc(canvec * sizeof(struct Par));
+    cantidadConexiones[i] = canvec;
+    int n,w;
+    for(j=0;j<canvec;j++){
+      fscanf(file,"%d",&n);
+      fscanf(file,"%d",&w);
+      struct Par p = {n,w};
+      grafo[i][j] = p;
+    }
+  }
+}
+void imprimirGrafo(){
+  for(i=0;i<CANTIDADNODOS;i++){
+    printf("%d:",i);
+    for(j=0;j<cantidadConexiones[i];j++){
+      printf(" (%d,%d)",grafo[i][j].n,grafo[i][j].w);
+    }
+    printf("\n");
+  }
+}
+
+
+//esta estructura en realidad representa cada nodo de una linkedlist que representa el stack, al final el stack en si va a ser un puntero que apunta al primero de estos
+struct Stack{
+  int valor;
+  struct Stack* siguiente;
+};
+//se le pasa un puntero al puntero que apunta a la cima del stack, crea un nuevo nodo apuntando a la cima y modifica el puntero para que ahora apunte a este nuevo creado
+void push(struct Stack** pstack, int valor){
+  struct Stack* newTop = (struct Stack*)malloc(sizeof(struct Stack));
+  newTop->valor = valor;
+  newTop->siguiente = (*pstack);
+  *pstack = newTop;
+}
+int pop(struct Stack** pstack){
+  if((*pstack)==NULL)return -1;
+  int ret = (*pstack)->valor;
+  struct Stack* newTop = (*pstack)->siguiente;
+  free(*pstack);
+  *pstack = newTop;
+  return ret;
+}
+struct Stack* makeStack(int n){
+  struct Stack* stack = (struct Stack*)malloc(sizeof(struct Stack));
+  stack->valor = n;
+  stack->siguiente = NULL;
+  return stack;
+}
+int stackEmpty(struct Stack* stack){return stack==NULL;}
+
+
+//retorna un stack con los nodos del camino mas corto entre nodoSalida y nodoLLegada, la distancia se guarda en distancias[nodoLLegada]
+struct Stack* dijkstra(int nodoSalida, int nodoLLegada){
+  for(i=0;i<CANTIDADNODOS;i++){
+    distancias[i] = INFINITY;
+  }
+  distancias[nodoSalida] = 0;
+  struct Stack* stack = makeStack(nodoSalida);
+  while(!stackEmpty(stack)){
+    int esteNodo = pop(&stack);
+    if(esteNodo == nodoLLegada)continue;//no es necesario ver los caminos que pasan por el nodo de llegada, obviamente no seran el mas corto
+    if(distancias[esteNodo]>distancias[nodoLLegada])continue;//si ya encontramos un camino mas corto que este, para que segirlo?
+    //revisar los i vecinos de este nodo
+    for(i=0;i<cantidadConexiones[esteNodo];i++){
+      int aquelNodo = grafo[esteNodo][i].n;
+      if((distancias[esteNodo]+grafo[esteNodo][i].w)<distancias[aquelNodo]){
+        distancias[aquelNodo] = distancias[esteNodo]+grafo[esteNodo][i].w;
+        previo[aquelNodo] = esteNodo;
+        push(&stack,aquelNodo);
+      }
+    }
+  }
+  struct Stack* camino = makeStack(nodoLLegada);
+  for(i=previo[nodoLLegada]; i != nodoSalida; i=previo[i]) push(&camino,i);
+  push(&camino,nodoSalida);
+  return camino;
+}
+
+
+
+int graphIndexDecoder(int calle, int cuadra){
+  if(calle == 22){//la diagonal es especial
+    switch(cuadra){
+    case 1:
+      return 111;
+    case 2:
+      return 96;
+    case 3:
+      return 81;
+    case 4:
+      return 66;
+    }
+  }
+  if(calle >= 14){
+    return cuadra + (calle-14)*14;
+  }else{
+    return calle + cuadra*14;
+  }
+}
 
 // ---------------------------------------------------------------------------MAIN-----------------------------------------------------------------------------//
 int main(int argc, char* argv[]){
@@ -284,53 +263,38 @@ int main(int argc, char* argv[]){
   lector(entrada,lectura);
 
   cargarGrafo();
-  int nodoSalida = 0; int nodoLLegada = 1;
-  if(lectura[0]>=14) {
-    printf("nodo salida es : fila %d y columna %d\n",lectura[1],lectura[0]);
-    nodoSalida = lectura[1]-14 + lectura[0]*14;
-  }else{
-    printf("nodo salidaa es : fila %d y columna %d\n",lectura[0],lectura[1]);
-    nodoSalida = lectura[0] + lectura[1]*14;
-  } 
-  if(lectura[2]>=14){
-    printf("nodo llegada es : fila %d y columna %d\n",lectura[3],lectura[2]);
-    nodoLLegada = lectura[3]-14 + lectura[2]*14;
-  }else {
-    printf("nodo llegadaa es : fila %d y columna %d\n",lectura[2],lectura[3]);
-    nodoLLegada = lectura[2] + lectura[3]*14;
-  }
+
+  int nodoSalida = graphIndexDecoder(lectura[0],lectura[1]);
+  int nodoLLegada = graphIndexDecoder(lectura[2],lectura[3]);
+
   int distancia = 0;
-  printf("dijkstra: %d -> %d\n",nodoSalida,nodoLLegada);
-  struct Stack camino = dijkstra(nodoSalida,nodoLLegada);
+  struct Stack* camino = dijkstra(nodoSalida,nodoLLegada);
   distancia += distancias[nodoLLegada];
-  struct Stack camino2;
+  struct Stack* camino2;
   int nodoIntermedio;
+  
   if(argc >= 4){
     nodoIntermedio = nodoLLegada;
-    if(lectura[4]>=14){
-      printf("nodo llegada es : fila %d y columna %d\n",lectura[5],lectura[4]);
-      nodoLLegada = lectura[5]-14 + lectura[4]*14;
-    }else {
-      printf("nodo llegadaa es : fila %d y columna %d\n",lectura[4],lectura[5]);
-      nodoLLegada = lectura[4] + lectura[5]*14;
-    }
-    printf("dijkstra: %d -> %d\n",nodoIntermedio,nodoLLegada);
+    nodoLLegada = graphIndexDecoder(lectura[4],lectura[5]);
     camino2 = dijkstra(nodoIntermedio,nodoLLegada);
     distancia += distancias[nodoLLegada];
   }
-  printf("queremos llegar desde %d a %d \n",nodoSalida, nodoLLegada);
-  printf("queremos llegar desde %s a %s \n",nombresIntersecciones[nodoSalida], nombresIntersecciones[nodoLLegada]);
-  printf("distancia: %d\n",distancia);
+  
+  if(!stackEmpty(camino)){
+  	printf("%s", nombresIntersecciones[pop(&camino)]);
+  }
   while(!stackEmpty(camino)){
     int n = pop(&camino);
-    n = n+1-1;
-    printf("%s -> ",nombresIntersecciones[n]);
+    printf("-> %s",nombresIntersecciones[n]);
+  }
+  
+  if(!stackEmpty(camino2)){
+  	printf("-> %s", nombresIntersecciones[pop(&camino2)]);
   }
   while(!stackEmpty(camino2)){
     int n = pop(&camino2);
-    n = n+1-1;
-    printf("%s -> ",nombresIntersecciones[n]);
+    printf("-> %s",nombresIntersecciones[n]);
   }
-  
+  printf("\ndistancia: %d m",distancia);
   return 0;
 }
