@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define CANTIDADNODOS 111
+#define CANTIDADNODOS 112
 #define INFINITY 2147483647 //el valor maximo del int, asumiendo que tiene sistema 32 bits. dudo que no sea el caso
 
 int i;
