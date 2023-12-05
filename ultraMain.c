@@ -5,6 +5,9 @@
 #define CANTIDADNODOS 111
 #define INFINITY 2147483647 //el valor maximo del int, asumiendo que tiene sistema 32 bits. dudo que no sea el caso
 
+int i;
+int j;
+
 // --------------------------------------------------------------------SECCIÓN BIBLIOTECA---------------------------------------------------------------------------//
 struct KeyValue {
     char key[50];
@@ -13,7 +16,7 @@ struct KeyValue {
 
 int diccionario(const char* ubicacion) {
 
-    struct KeyValue dictionary[22];
+    struct KeyValue dictionary[23];
 
     strcpy(dictionary[0].key, "Arturo_Prat");
     dictionary[0].value = 0;
@@ -80,6 +83,9 @@ int diccionario(const char* ubicacion) {
     
     strcpy(dictionary[21].key, "Chacabuco");
     dictionary[21].value = 21;
+
+    strcpy(dictionary[22].key, "Pedro_Aguirre_Cerda");
+    dictionary[22].value = 22;
     
 	for (i=0 ; i < 21 ; i++) {
         if (strcmp(ubicacion, dictionary[i].key) == 0) {
@@ -138,8 +144,6 @@ struct Par* grafo[CANTIDADNODOS];//los nodos a los que esta conectado el nodo i-
 int cantidadConexiones[CANTIDADNODOS];//la cantidad de conexiones que tiene el nodo i-esimo
 int distancias[CANTIDADNODOS];//al usar dijkstra guarda las distancias a cada nodo
 int previo[CANTIDADNODOS];//al usar dijkstra, guarda el nodo anterior en el camino mas corto
-int i;
-int j;
 void cargarGrafo(){
   FILE* file = fopen("conexiones.txt","r");
   if(file == NULL){printf("woopsie poopsie! no se pudo cargar las conexiones");return;}
@@ -225,7 +229,25 @@ struct Stack* dijkstra(int nodoSalida, int nodoLLegada){
 
 
 
-
+int graphIndexDecoder(int calle, int cuadra){
+  if(calle == 22){//la diagonal es especial
+    switch(cuadra){
+    case 1:
+      return 111;
+    case 2:
+      return 96;
+    case 3:
+      return 81;
+    case 4:
+      return 66;
+    }
+  }
+  if(calle >= 14){
+    return cuadra + (calle-14)*14;
+  }else{
+    return calle + cuadra*14;
+  }
+}
 
 // ---------------------------------------------------------------------------MAIN-----------------------------------------------------------------------------//
 int main(int argc, char* argv[]){
@@ -241,17 +263,10 @@ int main(int argc, char* argv[]){
   lector(entrada,lectura);
 
   cargarGrafo();
-  int nodoSalida = 0; int nodoLLegada = 1;
-  if(lectura[0]>=14) {
-    nodoSalida = lectura[1]-14 + lectura[0]*14;
-  }else{
-    nodoSalida = lectura[0] + lectura[1]*14;
-  } 
-  if(lectura[2]>=14){
-    nodoLLegada = lectura[3]-14 + lectura[2]*14;
-  }else {
-    nodoLLegada = lectura[2] + lectura[3]*14;
-  }
+
+  int nodoSalida = graphIndexDecoder(lectura[0],lectura[1]);
+  int nodoLLegada = graphIndexDecoder(lectura[2],lectura[3]);
+
   int distancia = 0;
   struct Stack* camino = dijkstra(nodoSalida,nodoLLegada);
   distancia += distancias[nodoLLegada];
@@ -260,12 +275,7 @@ int main(int argc, char* argv[]){
   
   if(argc >= 4){
     nodoIntermedio = nodoLLegada;
-    if(lectura[4]>=14){
-      nodoLLegada = lectura[4]-14 + lectura[5]*14;
-    }else {
-      nodoLLegada = lectura[5] + lectura[4]*14;
-    }
-    
+    nodoLLegada = graphIndexDecoder(lectura[4],lectura[5]);
     camino2 = dijkstra(nodoIntermedio,nodoLLegada);
     distancia += distancias[nodoLLegada];
   }
