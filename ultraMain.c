@@ -5,7 +5,128 @@
 #define CANTIDADNODOS 111
 #define INFINITY 2147483647 //el valor maximo del int, asumiendo que tiene sistema 32 bits. dudo que no sea el caso
 
+// --------------------------------------------------------------------SECCIÓN BIBLIOTECA---------------------------------------------------------------------------//
+struct KeyValue {
+    char key[50];
+    int value;
+};
 
+int diccionario(const char* ubicacion) {
+
+    struct KeyValue dictionary[22];
+
+    strcpy(dictionary[0].key, "Arturo_Prat");
+    dictionary[0].value = 0;
+
+    strcpy(dictionary[1].key, "Serrano");
+    dictionary[1].value = 1;
+
+    strcpy(dictionary[2].key, "Salas");								
+    dictionary[2].value = 2;
+    
+    strcpy(dictionary[3].key, "Angol");
+    dictionary[3].value = 3;
+    
+    strcpy(dictionary[4].key, "Lincoyan");
+    dictionary[4].value = 4;
+    
+    strcpy(dictionary[5].key, "Rengo");
+    dictionary[5].value = 5;
+    
+    strcpy(dictionary[6].key, "Caupolican");
+    dictionary[6].value = 6;
+    
+    strcpy(dictionary[7].key, "Anibal_Pinto");
+    dictionary[7].value = 7;
+    
+    strcpy(dictionary[8].key, "Colo_Colo");
+    dictionary[8].value = 8;
+    
+    strcpy(dictionary[9].key, "Castellon");
+    dictionary[9].value = 9;
+    
+    strcpy(dictionary[10].key, "Tucapel");
+    dictionary[10].value = 10;
+    
+    strcpy(dictionary[11].key, "Orompello");
+    dictionary[11].value = 11;
+    
+    strcpy(dictionary[12].key, "Ongolmo");
+    dictionary[12].value = 12;
+    
+    strcpy(dictionary[13].key, "Paicavi");
+    dictionary[13].value = 13;
+    
+    strcpy(dictionary[14].key, "los_Carrera");
+    dictionary[14].value = 14;
+    
+    strcpy(dictionary[15].key, "Maipu");
+    dictionary[15].value = 15;
+    
+    strcpy(dictionary[16].key, "Freire");
+    dictionary[16].value = 16;
+    
+    strcpy(dictionary[17].key, "Barros_Arana");
+    dictionary[17].value = 17;
+    
+    strcpy(dictionary[18].key, "O'Higgins");
+    dictionary[18].value = 18;
+    
+    strcpy(dictionary[19].key, "San_Martin");
+    dictionary[19].value = 19;
+    
+    strcpy(dictionary[20].key, "Cochrane");
+    dictionary[20].value = 20;
+    
+    strcpy(dictionary[21].key, "Chacabuco");
+    dictionary[21].value = 21;
+    
+	for (i=0 ; i < 21 ; i++) {
+        if (strcmp(ubicacion, dictionary[i].key) == 0) {
+            return dictionary[i].value; // Devuelve el valor correspondiente si se encuentra la clave
+        }
+    }
+    return -1; // Devuelve -1 si la clave no se encuentra en el diccionario
+        
+}
+
+// -----------------------------------------------SECCION DE ASIGNACION DE NOMBRES DE INTERSECCIONES A CADA NODO---------------------------------------------------------------------------//
+
+
+char nombresIntersecciones[CANTIDADNODOS][50];
+void cargarNombresIntersecciones(){
+  FILE* file = fopen("Intersecciones.txt","r");
+  if(file == NULL){printf("woopsie poopsie! no se pudo cargar las intersecciones");return;}
+  for(i=0;i<CANTIDADNODOS;i++){
+    if(fscanf(file,"%s",&nombresIntersecciones[i])==EOF)printf("woopsiepoopsie!!, no hay suficientes nombres en el archivo de intersecciones!");
+  }
+}
+
+
+// ----------------------------------------------------------------------SECCIÓN LECTOR---------------------------------------------------------------------------//
+void lector(const char* hola, int* lectura) {
+    char frase[50];
+    strcpy(frase, hola);
+    char* token = strtok(frase, " ");
+    int aux = 0;
+    while (token != NULL && aux < 6) {
+        if (strcmp(token, " ") != 0 && strcmp(token, "") != 0) {
+          char* palabra =strdup(token);
+        	if(aux%2==0){
+        		lectura[aux] = diccionario(palabra);
+    			}
+    			else{
+            int numero = atoi(palabra);
+    				lectura[aux] = (numero+50)/100;
+            if(lectura[aux-1]<14){
+              lectura[aux] = 8 - lectura[aux];
+            }
+    			}
+            aux++;
+        }
+        token = strtok(NULL, " ");
+    }
+}
 
 // ---------------------------------------------------------------------SECCIÓN DIJKSTRA---------------------------------------------------------------------------//
 //para guardar caminos, el nodo al que se conecta y el peso del camino
@@ -103,126 +224,7 @@ struct Stack* dijkstra(int nodoSalida, int nodoLLegada){
 }
 
 
-// --------------------------------------------------------------------SECCIÓN BIBLIOTECA---------------------------------------------------------------------------//
-struct KeyValue {
-    char key[50];
-    int value;
-};
 
-int diccionario(const char* ubicacion) {
-
-    struct KeyValue dictionary[22];
-
-    strcpy(dictionary[0].key, "Arturo_Prat");
-    dictionary[0].value = 0;
-
-    strcpy(dictionary[1].key, "Serrano");
-    dictionary[1].value = 1;
-
-    strcpy(dictionary[2].key, "Salas");								
-    dictionary[2].value = 2;
-    
-    strcpy(dictionary[3].key, "Angol");
-    dictionary[3].value = 3;
-    
-    strcpy(dictionary[4].key, "Lincoyan");
-    dictionary[4].value = 4;
-    
-    strcpy(dictionary[5].key, "Rengo");
-    dictionary[5].value = 5;
-    
-    strcpy(dictionary[6].key, "Caupolican");
-    dictionary[6].value = 6;
-    
-    strcpy(dictionary[7].key, "Anibal_Pinto");
-    dictionary[7].value = 7;
-    
-    strcpy(dictionary[8].key, "Colo_Colo");
-    dictionary[8].value = 8;
-    
-    strcpy(dictionary[9].key, "Castellon");
-    dictionary[9].value = 9;
-    
-    strcpy(dictionary[10].key, "Tucapel");
-    dictionary[10].value = 10;
-    
-    strcpy(dictionary[11].key, "Orompello");
-    dictionary[11].value = 11;
-    
-    strcpy(dictionary[12].key, "Ongolmo");
-    dictionary[12].value = 12;
-    
-    strcpy(dictionary[13].key, "Paicavi");
-    dictionary[13].value = 13;
-    
-    strcpy(dictionary[14].key, "los_Carrera");
-    dictionary[14].value = 14;
-    
-    strcpy(dictionary[15].key, "Maipu");
-    dictionary[15].value = 15;
-    
-    strcpy(dictionary[16].key, "Freire");
-    dictionary[16].value = 16;
-    
-    strcpy(dictionary[17].key, "Barros_Arana");
-    dictionary[17].value = 17;
-    
-    strcpy(dictionary[18].key, "O'Higgins");
-    dictionary[18].value = 18;
-    
-    strcpy(dictionary[19].key, "San_Martin");
-    dictionary[19].value = 19;
-    
-    strcpy(dictionary[20].key, "Cochrane");
-    dictionary[20].value = 20;
-    
-    strcpy(dictionary[21].key, "Chacabuco");
-    dictionary[21].value = 21;
-    
-	for (i=0 ; i < 21 ; i++) {
-        if (strcmp(ubicacion, dictionary[i].key) == 0) {
-            return dictionary[i].value; // Devuelve el valor correspondiente si se encuentra la clave
-        }
-    }
-    return -1; // Devuelve -1 si la clave no se encuentra en el diccionario
-        
-}
-
-
-char nombresIntersecciones[CANTIDADNODOS][50];
-void cargarNombresIntersecciones(){
-  FILE* file = fopen("Intersecciones.txt","r");
-  if(file == NULL){printf("woopsie poopsie! no se pudo cargar las intersecciones");return;}
-  for(i=0;i<CANTIDADNODOS;i++){
-    if(fscanf(file,"%s",&nombresIntersecciones[i])==EOF)printf("woopsiepoopsie!!, no hay suficientes nombres en el archivo de intersecciones!");
-  }
-}
-
-
-// ----------------------------------------------------------------------SECCIÓN LECTOR---------------------------------------------------------------------------//
-void lector(const char* hola, int* lectura) {
-    char frase[50];
-    strcpy(frase, hola);
-    char* token = strtok(frase, " ");
-    int aux = 0;
-    while (token != NULL && aux < 6) {
-        if (strcmp(token, " ") != 0 && strcmp(token, "") != 0) {
-          char* palabra =strdup(token);
-        	if(aux%2==0){
-        		lectura[aux] = diccionario(palabra);
-    			}
-    			else{
-            int numero = atoi(palabra);
-    				lectura[aux] = (numero+50)/100;
-            if(lectura[aux-1]<14){
-              lectura[aux] = 8 - lectura[aux];
-            }
-    			}
-            aux++;
-        }
-        token = strtok(NULL, " ");
-    }
-}
 
 
 // ---------------------------------------------------------------------------MAIN-----------------------------------------------------------------------------//
