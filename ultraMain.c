@@ -102,17 +102,17 @@ int diccionario(const char* ubicacion) {
 char nombresIntersecciones[CANTIDADNODOS][50];
 void cargarNombresIntersecciones(){
   FILE* file = fopen("Intersecciones.txt","r");
-  if(file == NULL){printf("woopsie poopsie! no se pudo cargar las intersecciones");return;}
+  if(file == NULL){printf("No se pudo cargar las intersecciones");return;}
   for(i=0;i<CANTIDADNODOS;i++){
-    if(fscanf(file,"%s",&nombresIntersecciones[i])==EOF)printf("woopsiepoopsie!!, no hay suficientes nombres en el archivo de intersecciones!");
+    if(fscanf(file,"%s",&nombresIntersecciones[i])==EOF)printf("No hay suficientes nombres en el archivo de intersecciones");
   }
 }
 
 
 // ----------------------------------------------------------------------SECCIÓN LECTOR---------------------------------------------------------------------------//
-void lector(const char* hola, int* lectura) {
+void lector(const char* entrada, int* lectura) {
     char frase[50];
-    strcpy(frase, hola);
+    strcpy(frase, entrada);
     char* token = strtok(frase, " ");
     int aux = 0;
     while (token != NULL && aux < 6) {
@@ -120,14 +120,14 @@ void lector(const char* hola, int* lectura) {
           char* palabra =strdup(token);
         	if(aux%2==0){
         		lectura[aux] = diccionario(palabra);
-    			}
-    			else{
-            int numero = atoi(palabra);
-    				lectura[aux] = (numero+50)/100;
-            if(lectura[aux-1]<14){
-              lectura[aux] = 8 - lectura[aux];
-            }
-    			}
+    		}
+    		else{
+            	int numero = atoi(palabra);
+    			lectura[aux] = (numero+50)/100;
+	            if(lectura[aux-1]<14){
+	              lectura[aux] = 8 - lectura[aux];
+	            }
+    		}
             aux++;
         }
         token = strtok(NULL, " ");
@@ -146,7 +146,7 @@ int distancias[CANTIDADNODOS];//al usar dijkstra guarda las distancias a cada no
 int previo[CANTIDADNODOS];//al usar dijkstra, guarda el nodo anterior en el camino mas corto
 void cargarGrafo(){
   FILE* file = fopen("conexiones.txt","r");
-  if(file == NULL){printf("woopsie poopsie! no se pudo cargar las conexiones");return;}
+  if(file == NULL){printf("No se pudo cargar las conexiones");return;}
   int canvec;
   for(i=0;fscanf(file,"%d",&canvec)!=EOF;i++){
     grafo[i] = (struct Par*)malloc(canvec * sizeof(struct Par));
